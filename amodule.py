@@ -6,35 +6,52 @@ from tkinter import *
 root = Tk()
 root.title('Batch Image App')
 root.iconbitmap('app//alatoo.ico')
-root.geometry('300x300')
 
-def Openfolder():
-    root = Tk()
-    root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",
-                                                filetypes = (("jpeg files","*.jpg"), ("all files","*.*")))
-    print (root.filename)
+for k in os.listdir('.'):
+    if k.endswith('.jpg') or k.endswith('.png'):
+        i = Image.open(k)
+        fn, flext = os.path.splitext(k)
+
+        #watermark
+        w = Image.open(k)
+        width, height = w.size
+        draw = ImageDraw.Draw(w)
+        text = "HII :>"
+        title = "black"
+        font = ImageFont.truetype("app/font.ttf", 90)
+        textwidth, textheight = draw.textsize(text, font)
+
+        margin = 10
+        x = width - textwidth - margin
+        y = height - textheight - margin
+
+        draw.text((x, y), text, title, font=font)
         
-def batch():
-    for pic in os.listdir('images'):
-        if pic.endswith('.jpg' or '.png' or '.img' or '.jpeg'):
-            img = Image.open(pic)
-            fn, flext = os.path.splitext(pic)
+        ifl = i.filter(ImageFilter.DETAIL)
+        # Resize Image
+        ir = i.resize((1080, 1080))
+        # Convert Image to Black and White
+        ibw = i.convert('L')
 
-            new = img.convert('L')
-            new1 = new.filter(ImageFilter.DETAIL)
-            new2 = new1.resize((1080, 1080))
-            width, height = new2.size
+        res = i.convert('L')
+        res1 = res.filter(ImageFilter.DETAIL)
+        res2 = res1.resize((1080, 1080))
+        width, height = res2.size
 
-            draw = ImageDraw.Draw(new2)
-            text = "hii :>"
-            title = "BLACK"
-            font = ImageFont.truetype("app/font.ttf", 80)
-            textwidth, textheight = draw.textsize(text, font)
+        draw = ImageDraw.Draw(res2)
+        text = "HII :>"
+        title = "black"
+        font = ImageFont.truetype("app/font.ttf", 90)
+        textwidth, textheight = draw.textsize(text, font)
 
-            margin = 10
-            x = width - textwidth - margin
-            y = height - textheight - margin
+        margin = 10
+        x = width - textwidth - margin
+        y = height - textheight - margin
 
-            draw.text((x, y), text, title, font=font)
-
-            new2.save('pic/{}{}'.format(fn, flext))
+        draw.text((x, y), text, title, font=font)
+        
+        ir.save('pics/{}{}'.format(fn, flext))
+        ifl.save('pics/{}{}'.format(fn, flext))
+        ibw.save('pics/{}{}'.format(fn, flext))
+        w.save('pics/{}{}'.format(fn, flext))
+        res2.save('pics/{}{}'.format(fn, flext))
